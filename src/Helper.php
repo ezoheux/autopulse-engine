@@ -36,18 +36,20 @@ class Helper implements Extension
         foreach ($ksCastlingRights as $ksKey => $ksRights) {
             if ($ksRights === '1') {
                 $res['castlingRights']['kS'][$ksKey] = true;
+            } else {
+                $res['castlingRights']['kS'][$ksKey] = false;
             }
-            $res['castlingRights']['kS'][$ksKey] = false;
         }
         foreach ($qsCastlingRights as $qsKey => $qsRights) {
             if ($qsRights === '1') {
                 $res['castlingRights']['qS'][$qsKey] = true;
+            } else {
+                $res['castlingRights']['qS'][$qsKey] = false;
             }
-            $res['castlingRights']['qS'][$qsKey] = false;
         }
-        $possibleEnpassant = \substr($fen[5], 2, 9);
+        $possibleEnpassant = \substr($fen[6], 2, 9);
         if ($possibleEnpassant === 'enPassant') {
-            $enpassantParts = explode(':', $fen[5]);
+            $enpassantParts = explode(':', $fen[6]);
             $enpassantVars = rtrim(ltrim($enpassantParts[1], '{('), ')}');
             $pieces = explode(',', $enpassantVars);
             $opt = [];
@@ -55,10 +57,10 @@ class Helper implements Extension
                 $opt[] = rtrim(ltrim($piece, '\''), '\'');
             }
             $res['enpassants'] = $opt;
-            $boardFen = $fen[6];
+            $boardFen = $fen[7];
         } else {
             $res['enpassants'] = ['', '', '', ''];
-            $boardFen = $fen[5];
+            $boardFen = $fen[6];
         }
         $board = [];
         $pieceCodes = [
@@ -71,7 +73,7 @@ class Helper implements Extension
         ];
         $ranks = explode('/', $boardFen);
         foreach ($ranks as $rank) {
-            $squares = explode(',', $ranks);
+            $squares = explode(',', $rank);
             foreach ($squares as $square) {
                 if (array_key_exists($square, $pieceCodes)) {
                     $board[] = $pieceCodes[$square];
