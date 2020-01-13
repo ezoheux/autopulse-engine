@@ -2,6 +2,7 @@
 
 namespace Hikura\Evaluation;
 
+use Hikura\Handler;
 use Hikura\Board;
 
 /**
@@ -9,6 +10,16 @@ use Hikura\Board;
  */
 final class MinimaxSearch implements Search
 {
+    /**
+     * @var bool $shouldSendArrows Shoud we send arrows.
+     */
+    private $shouldSendArrows;
+
+    /**
+     * @var \Hikura\Handler $apiHandler The api handler.
+     */
+    private $apiHandler;
+
     /**
      * @var \Hikura\Evaluation\Evaluator $evaluator The minimax current evaluator.
      */
@@ -22,13 +33,17 @@ final class MinimaxSearch implements Search
     /**
      * Constuct a new minimax search.
      *
-     * @param \Hikura\Evaluation\Evaluator $evaluator The minimax current evaluator.
-     * @param int                          $depth     The max search depth.
+     * @param \Hikura\Handler              $apiHandler       The api handler.
+     * @param \Hikura\Evaluation\Evaluator $evaluator        The minimax current evaluator.
+     * @param int                          $depth            The max search depth.
+     * @param bool                         $shouldSendArrows Shoud we send arrows.
      *
      * @return void Returns nothing.
      */
-    public function __construct(Evaluator $evaluator, int $depth)
+    public function __construct(Handler $apiHandler, Evaluator $evaluator, int $depth, bool $shouldSendArrows = false)
     {
+        $this->shouldSendArrows = $shouldSendArrows;
+        $this->apiHandler = $apihandler;
         $this->evaluator = $evaluator;
         $this->depth = $depth;
     }
@@ -36,7 +51,8 @@ final class MinimaxSearch implements Search
     /**
      * Calculate the best move based on the board.
      *
-     * @param \Hikura\Board The board.
+     * @param \Hikura\Board $board            The board.
+     * @param bool          $shouldSendArrows Should we send arrows.
      *
      * @return ?string Returns null or the best move based on the position.
      */
@@ -49,12 +65,22 @@ final class MinimaxSearch implements Search
         if (count($moves) === 1) {
             return reset($moves);
         }
+        $x = 1;
+        $this->apiHandler->clear();
         foreach ($moves as $move) {
             $board->move($move);
+            if ($x === 1 && $this->shouldSendArrows) {
+                $this->apiHandler->arrow($move[0], $move[1]);
+                $x = 0;
+            }
             $newValue = $this->minimax($this->depth - 1, -100000, 100000, $board);
             if ($ryMove ? $newValue < $bestValue : $newValue > $bestValue) {
                 $bestMove = $move;
                 $bestValue = $newValue;
+                if ($this->shouldSendArrows) {
+                    $this->apiHandler->clear();
+                    $this->apiHandler->arrow($move[0], $move[1]);
+                }
             }
             $board->undo();
         }
@@ -64,9 +90,9 @@ final class MinimaxSearch implements Search
     /**
      * Initialize a minimax search.
      *
-     * @param int $depth           The max search depth.
-     * @param int $alpha           The alpha mix.     
-     * @param int $beta            The beta mix.
+     * @param int           $depth The max search depth.
+     * @param int           $alpha The alpha mix.     
+     * @param int           $beta  The beta mix.
      * @param \Hikura\Board $board The board.
      *
      * @returns int The evaluation sum on the move.
