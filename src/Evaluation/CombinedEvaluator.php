@@ -10,7 +10,7 @@ use Hikura\Board;
 final class CombinedEvaluator implements Evaluator
 {
     /**
-     * @var Evaluator[] A list of the evaluators.
+     * @var Evaluator[] $evaluators A list of the evaluators.
      */
     private $evaluators;
 
