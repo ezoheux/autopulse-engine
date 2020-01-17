@@ -38,7 +38,7 @@ final class MaterialEvaluator implements Evaluator
             return 0;
         }
         $color = ($piece['color'] === 'R' || $piece['color'] === 'Y') ? 1 : -1;
-        switch ($piece['type']) {
+        switch ($piece['piece']) {
             case 'P':
                 return PointValue::PAWN * $color;
             case 'R':
