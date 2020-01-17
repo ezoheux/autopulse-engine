@@ -37,19 +37,19 @@ final class MaterialEvaluator implements Evaluator
         if ($piece === null) {
             return 0;
         }
-        $color = ($piece['color'] === 'R' || $piece['color'] === 'Y') ? 1 : -1;
-        switch ($piece['piece']) {
-            case 'P':
+        $color = ($piece[0] === 0 || $piece[0] === 2) ? 1 : -1;
+        switch ($piece[1]) {
+            case 0:
                 return PointValue::PAWN * $color;
-            case 'R':
+            case 3:
                 return PointValue::ROOK * $color;
-            case 'N':
+            case 1:
                 return PointValue::KNIGHT * $color;
-            case 'B':
+            case 2:
                 return PointValue::BISHOP * $color;
-            case 'Q':
+            case 4:
                 return PointValue::QUEEN * $color;
-            case 'K':
+            case 5:
                 return PointValue::KING * $color;
             default:
                 return 0;
