@@ -29,6 +29,6 @@ class Board
      */
     public function ryMove(): bool
     {
-        return $this->helper->turn === 0 || $this->helper->turn === 2;
+        return $this->helper->turn === 'R' || $this->helper->turn === 'Y';
     }
 }
