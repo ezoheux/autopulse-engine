@@ -23,5 +23,5 @@ interface PointValue
     public const QUEEN = 1000;
 
     /** @const int KING The value of an king. */
-    public const KING = 10000;
+    public const KING = 20000;
 }
