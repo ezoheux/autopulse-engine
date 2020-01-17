@@ -31,4 +31,20 @@ class Board
     {
         return $this->helper->turn === 'R' || $this->helper->turn === 'Y';
     }
+
+    /**
+     * Get all the pieces in the current position.
+     *
+     * @return array Returns the pieces in an array.
+     */
+    public function pieces(): array
+    {
+        $pieces = [];
+        foreach ($this->helper->board as $square) {
+            if (is_array($square)) {
+                $pieces[] = $aquare;
+            }
+        }
+        return $pieces;
+    }
 }
