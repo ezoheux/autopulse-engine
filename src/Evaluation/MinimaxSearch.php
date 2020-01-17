@@ -65,14 +65,9 @@ final class MinimaxSearch implements Search
         if (count($moves) === 1) {
             return reset($moves);
         }
-        $x = 1;
         $this->apiHandler->clear();
         foreach ($moves as $move) {
             $board->move($move);
-            if ($x === 1 && $this->shouldSendArrows) {
-                $this->apiHandler->arrow($move[0], $move[1]);
-                $x = 0;
-            }
             $newValue = $this->minimax($this->depth - 1, -100000, 100000, $board);
             if ($ryMove ? $newValue < $bestValue : $newValue > $bestValue) {
                 $bestMove = $move;
