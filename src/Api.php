@@ -9,12 +9,12 @@ class Api implements Handler
 {
     /** @var array $endpoint The api enpoints */
     private $endpoint = [
-        'arrow' => 'https://4player-beta.chess.com/bot?token={token}&arrow=',
-        'chat' => 'https://4player-beta.chess.com/bot?token={token}&chat=',
-        'clear' => 'https://4player-beta.chess.com/bot?token={token}&arrow=clear',
-        'play' => 'https://4player-beta.chess.com/bot?token={token}&play=',
-        'resign' => 'https://4player-beta.chess.com/bot?token={token}&play=R',
-        'stream' => 'https://4player-beta.chess.com/bot?token={token}&stream=1',
+        'arrow' => 'https://4player.chess.com/bot?token={token}&arrow=',
+        'chat' => 'https://4player.chess.com/bot?token={token}&chat=',
+        'clear' => 'https://4player.chess.com/bot?token={token}&arrow=clear',
+        'play' => 'https://4player.chess.com/bot?token={token}&play=',
+        'resign' => 'https://4player.chess.com/bot?token={token}&play=R',
+        'stream' => 'https://4player.chess.com/bot?token={token}&stream=1',
     ];
 
     /** @var string $userAgent The user agent to send. */
