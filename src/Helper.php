@@ -3,10 +3,166 @@
 namespace Hikura;
 
 /**
- * The helper extension.
+ * Any extra variables and functions needed for proper function.
  */
-class Helper implements Extension
+class Helper
 {
+    /** @var array $colorsReturn Revert the numeric color value back to its string repensentation. */
+    private $colorsReturn = ['R', 'B', 'Y', 'G',];
+
+    /** @var array $piecesReturn Revert the numeric piece value back to its string repensentation. */
+    private $piecesReturn = ['P', 'N', 'B', 'R', 'Q', 'K',];
+
+    /** @var array $colors Convert the colors to a numeric repensation. */
+    private $colors = ['R' => 0, 'B' => 1, 'Y' => 2, 'G' => 3,];
+
+    /** @var array $enpassants The enpassant codes. */
+    public $enpassants = ['R' => '-', 'B' => '-', 'Y' => '-', 'G' => '-',];
+
+    /** @var array $convertPromotionPiece Convert the promotion piece. */
+    public $convertPromotionPiece = ['N' => 1, 'B' => 2, 'R' => 3, 'Q' => 4,];
+
+    /** @var array $rookSquare The rook to & from squares (kingside, queenside). */
+    public $rookSquares = [
+        'h1'  => ['f1'  => ['g1',  'd1', ], 'j1'  => ['i1',  'k1', ],],
+        'a8'  => ['a6'  => ['a7',  'a4', ], 'a10' => ['a9',  'a11',],],
+        'g14' => ['i14' => ['h14', 'k14',], 'e14' => ['f14', 'd14',],],
+        'n7'  => ['n9'  => ['n8',  'n11',], 'n5'  => ['n6',  'n4', ],],
+    ];
+
+    /** @var array The castling rights. */
+    public $castling = [
+        'h1'  => ['f1'  => true, 'j1'  => true,],
+        'a8'  => ['a6'  => true, 'a10' => true,],
+        'g14' => ['i14' => true, 'e14' => true,],
+        'n7'  => ['n9'  => true, 'n5'  => true,],
+    ];
+
+    /** @var array $moveTwoSquares A list of square to allow two space moves for pawns.*/
+    private $moveTwoSquares = [
+        'd2',  'e2',  'f2',  'g2',  'h2',  'i2',  'j2',  'k2',
+        'b4',  'b5',  'b6',  'b7',  'b8',  'b9',  'b10', 'b11',
+        'd13', 'e13', 'f13', 'g13', 'h13', 'i13', 'j13', 'k13',
+        'm4',  'm5',  'm6',  'm7',  'm8',  'm9',  'm10', 'm11',
+    ];
+
+    /** @var array $opositeColors The list of opposite colors. */
+    public $oppositeColors = [
+        'R' => [
+            'B',
+            'G',
+        ],
+        'B' => [
+            'R',
+            'Y',
+        ],
+        'Y' => [
+            'B',
+            'G',
+        ],
+        'G' => [
+            'R',
+            'Y',
+        ],
+    ];
+
+    /** @var array $convertLetters Translate a letter to a number. */
+    private $convertLetters = [
+        'a' => 1, 'b' => 2, 'c' => 3,  'd' => 4,  'e' => 5,  'f' => 6,  'g' => 7,
+        'h' => 8, 'i' => 9, 'j' => 10, 'k' => 11, 'l' => 12, 'm' => 13, 'n' => 14,
+    ];
+
+    /** @var array $convertNumbers Translate a number to a letter. */
+    private $convertNumbers = [
+        1  => 'a', 2  => 'b', 3  => 'c', 4  => 'd', 5  => 'e', 6  => 'f', 7  => 'g',
+        8  => 'h', 9  => 'i', 10 => 'j', 11 => 'k', 12 => 'l', 13 => 'm', 14 => 'n',
+    ];
+
+    /**
+     * @var array $promotionSquares The promotion squares.
+     */
+    public $promotionSquares = [
+        'R' => [
+            'a11', 'b11', 'c11', 'd11', 'e11', 'f11', 'g11',
+            'h11', 'i11', 'j11', 'k11', 'l11', 'm11', 'n11',
+        ],
+        'B' => [
+            'k1',  'k2',  'k3',  'k4',  'k5',  'k6',  'k7',
+            'k8',  'k9',  'k10', 'k11', 'k12', 'k13', 'k14',
+        ],
+        'Y' => [
+            'a4',  'b4',  'c4',  'd4',  'e4',  'f4',  'g4',
+            'h4',  'i4',  'j4',  'k4',  'l4',  'm4',  'n4',
+        ],
+        'G' => [
+            'd1',  'd2',  'd3',  'd4',  'd5',  'd6',  'd7',
+            'd8',  'd9',  'd10', 'd11', 'd12', 'd13', 'd14',
+        ],
+    ];
+
+    /** @var string $turn The current move turn. */
+    public $turn = 'R';
+
+    /** @var int $moveNumber The move number. */
+    public $moveNumber = 1;
+
+    /** @var int $halfMoves The move number. */
+    public $halfMoves = 0;
+
+    /** @var array $numericAlphabeticSquares The 4 player chess numeric alphabetic squares. */
+    private $numericAlphabeticSquares = [
+                             'd14', 'e14', 'f14', 'g14', 'h14', 'i14', 'j14', 'k14',
+                             'd13', 'e13', 'f13', 'g13', 'h13', 'i13', 'j13', 'k13',
+                             'd12', 'e12', 'f12', 'g12', 'h12', 'i12', 'j12', 'k12',
+        'a11', 'b11', 'c11', 'd11', 'e11', 'f11', 'g11', 'h11', 'i11', 'j11', 'k11', 'l11', 'm11', 'n11',
+        'a10', 'b10', 'c10', 'd10', 'e10', 'f10', 'g10', 'h10', 'i10', 'j10', 'k10', 'l10', 'm10', 'n10',
+        'a9',  'b9',  'c9',  'd9',  'e9',  'f9',  'g9',  'h9',  'i9',  'j9',  'k9',  'l9',  'm9',  'n9',
+        'a8',  'b8',  'c8',  'd8',  'e8',  'f8',  'g8',  'h8',  'i8',  'j8',  'k8',  'l8',  'm8',  'n8',
+        'a7',  'b7',  'c7',  'd7',  'e7',  'f7',  'g7',  'h7',  'i7',  'j7',  'k7',  'l7',  'm7',  'n7',
+        'a6',  'b6',  'c6',  'd6',  'e6',  'f6',  'g6',  'h6',  'i6',  'j6',  'k6',  'l6',  'm6',  'n6',
+        'a5',  'b5',  'c5',  'd5',  'e5',  'f5',  'g5',  'h5',  'i5',  'j5',  'k5',  'l5',  'm5',  'n5',
+        'a4',  'b4',  'c4',  'd4',  'e4',  'f4',  'g4',  'h4',  'i4',  'j4',  'k4',  'l4',  'm4',  'n4',
+                             'd3',  'e3',  'f3',  'g3',  'h3',  'i3',  'j3',  'k3',
+                             'd2',  'e2',  'f2',  'g2',  'h2',  'i2',  'j2',  'k2',
+                             'd1',  'e1',  'f1',  'g1',  'h1',  'i1',  'j1',  'k1',
+    ];
+
+    /** @var array $board The 4 player chess board. */
+    public $board = [
+        [2, 3,], [2, 1,], [2, 2,], [2, 5,], [2, 4,], [2, 2,], [2, 1,], [2, 3,],
+        [2, 0,], [2, 0,], [2, 0,], [2, 0,], [2, 0,], [2, 0,], [2, 0,], [2, 0,],
+                             0, 0, 0, 0, 0, 0, 0, 0,
+        [1, 3,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 3,], 
+        [1, 1,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 1,],
+        [1, 2,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 2,],
+        [1, 5,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 4,],
+        [1, 4,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 5,],
+        [1, 2,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 2,],
+        [1, 1,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 1,],
+        [1, 3,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 3,],
+                             0, 0, 0, 0, 0, 0, 0, 0,
+        [0, 0,], [0, 0,], [0, 0,], [0, 0,], [0, 0,], [0, 0,], [0, 0,], [0, 0,],
+        [0, 3,], [0, 1,], [0, 2,], [0, 4,], [0, 5,], [0, 1,], [0, 2,], [0, 3,],
+    ];
+
+    /** @var array $standardBoard The standard 4 player chess board. */
+    public $standardBoard = [
+        [2, 3,], [2, 1,], [2, 2,], [2, 5,], [2, 4,], [2, 2,], [2, 1,], [2, 3,],
+        [2, 0,], [2, 0,], [2, 0,], [2, 0,], [2, 0,], [2, 0,], [2, 0,], [2, 0,],
+                             0, 0, 0, 0, 0, 0, 0, 0,
+        [1, 3,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 3,], 
+        [1, 1,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 1,],
+        [1, 2,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 2,],
+        [1, 5,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 4,],
+        [1, 4,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 5,],
+        [1, 2,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 2,],
+        [1, 1,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 1,],
+        [1, 3,], [1, 0,], 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [3, 0,], [3, 3,],
+                             0, 0, 0, 0, 0, 0, 0, 0,
+        [0, 0,], [0, 0,], [0, 0,], [0, 0,], [0, 0,], [0, 0,], [0, 0,], [0, 0,],
+        [0, 3,], [0, 1,], [0, 2,], [0, 4,], [0, 5,], [0, 1,], [0, 2,], [0, 3,],
+    ];
+
     /**
      * Get the next colors turn.
      *
@@ -370,86 +526,3 @@ class Helper implements Extension
         }
         return false;
     }
-
-    /**
-     * Parse the fen string.
-     *
-     * @param string $fen The fen string to parse.
-     *
-     * @return array Returns the parse fen into an array format.
-     */
-    public function parseFen(string $fen = ''): array
-    {
-        $fen = trim($fen);
-        if ($fen === '') {
-            return [];
-        }
-        $res = [];
-        $fen = explode('-', $fen);
-        $res['turn'] = $fen[0];
-        $playDead = explode(',', $fen[1]);
-        $res['gameOver'] = false;
-        foreach ($playDead as $dead) {
-            if ($dead === '1') {
-                $res['gameOver'] = true;
-                break;
-            }
-        }
-        $ksCastlingRights = explode(',', $fen[2]);
-        $qsCastlingRights = explode(',', $fen[3]);
-        foreach ($ksCastlingRights as $ksKey => $ksRights) {
-            if ($ksRights === '1') {
-                $res['castlingRights']['kS'][$ksKey] = true;
-            } else {
-                $res['castlingRights']['kS'][$ksKey] = false;
-            }
-        }
-        foreach ($qsCastlingRights as $qsKey => $qsRights) {
-            if ($qsRights === '1') {
-                $res['castlingRights']['qS'][$qsKey] = true;
-            } else {
-                $res['castlingRights']['qS'][$qsKey] = false;
-            }
-        }
-        $possibleEnpassant = \substr($fen[6], 2, 9);
-        if ($possibleEnpassant === 'enPassant') {
-            $enpassantParts = explode(':', $fen[6]);
-            $enpassantVars = rtrim(ltrim($enpassantParts[1], '{('), ')}');
-            $pieces = explode(',', $enpassantVars);
-            $opt = [];
-            foreach ($pieces as $piece) {
-                $opt[] = rtrim(ltrim($piece, '\''), '\'');
-            }
-            $res['enpassants'] = $opt;
-            $boardFen = $fen[7];
-        } else {
-            $res['enpassants'] = ['', '', '', ''];
-            $boardFen = $fen[6];
-        }
-        $board = [];
-        $pieceCodes = [
-            'rK' => [0, 5], 'bK' => [1, 5], 'yK' => [2, 5], 'gK' => [3, 5],
-            'rQ' => [0, 4], 'bQ' => [1, 4], 'yQ' => [2, 4], 'gQ' => [3, 4],
-            'rR' => [0, 3], 'bR' => [1, 3], 'yR' => [2, 3], 'gR' => [3, 3],
-            'rB' => [0, 2], 'bB' => [1, 2], 'yB' => [2, 2], 'gB' => [3, 2],
-            'rN' => [0, 1], 'bN' => [1, 1], 'yN' => [2, 1], 'gN' => [3, 1],
-            'rP' => [0, 0], 'bP' => [1, 0], 'yP' => [2, 0], 'gP' => [3, 0],
-        ];
-        $ranks = explode('/', $boardFen);
-        foreach ($ranks as $rank) {
-            $squares = explode(',', $rank);
-            foreach ($squares as $square) {
-                if (array_key_exists($square, $pieceCodes)) {
-                    $board[] = $pieceCodes[$square];
-                } else {
-                    $int = intval($square);
-                    for ($i = 1; $i <= $int; $i++) {
-                        $board[] = 0;
-                    }
-                }
-            }
-        }
-        $res['board'] = $board;
-        return $res;
-    }
-}
