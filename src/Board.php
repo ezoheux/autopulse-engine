@@ -42,7 +42,7 @@ class Board
         $pieces = [];
         foreach ($this->helper->board as $square) {
             if (is_array($square)) {
-                $pieces[] = $aquare;
+                $pieces[] = $square;
             }
         }
         return $pieces;
