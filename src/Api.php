@@ -1,6 +1,6 @@
 <?php
 
-namespace Hikura;
+namespace Omatamix\Console;
 
 /**
  * The api handler.
@@ -18,7 +18,7 @@ class Api
     ];
 
     /** @var string $userAgent The user agent to send. */
-    private $userAgent = 'EngineConsole/v01.2.7 (www.chess.com/member/omatamix)';
+    private $userAgent = 'OmatamixConsole/v01.0.0 (www.chess.com/member/omatamix)';
 
     /**
      * Construct a new api controller.
